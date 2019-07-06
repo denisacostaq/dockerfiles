@@ -8,6 +8,7 @@ ARG QT_VERSION=5.13.0
 ARG NDK_VERSION=r18b
 ARG SDK_PLATFORM=android-21
 ARG SDK_BUILD_TOOLS=21.1.2
+ARG CMAKE_VERSION=3.14.5
 ARG SDK_PACKAGES="tools platform-tools"
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -35,7 +36,6 @@ ENV PATH ${QT_ANDROID}/bin:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${AND
 #  * cmake, just an extra tool.
 RUN dpkg --add-architecture i386 && apt update && apt full-upgrade -y && apt install -y --no-install-recommends \
     unzip \
-    cmake \
     git \
     openssh-client \
     ca-certificates \
@@ -77,6 +77,10 @@ RUN curl -Lo /tmp/sdk-tools.zip 'https://dl.google.com/android/repository/sdk-to
 RUN mkdir /tmp/android && cd /tmp/android && curl -Lo ndk.zip "https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux-x86_64.zip" \
     && unzip -q ndk.zip && mv android-ndk-* $ANDROID_NDK_ROOT && chmod -R +rX $ANDROID_NDK_ROOT \
     && rm -rf /tmp/android
+
+# Download an unpack cmake
+RUN wget -qO- https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz | sudo tar xzf - -C /opt/
+ENV PATH="/opt/cmake-${CMAKE_VERSION}-Linux-x86_64/bin:$PATH"
 
 # Reconfigure locale
 RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
