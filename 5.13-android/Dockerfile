@@ -88,7 +88,7 @@ RUN bash -cx 'wget -qO- https://github.com/protocolbuffers/protobuf/releases/dow
     && cmake -Dprotobuf_BUILD_SHARED_LIBS=ON -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_PROTOC_BINARIES=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake -DCMAKE_INSTALL_PREFIX=/opt/protobuf -DANDROID_NDK=${ANDROID_NDK_ROOT} -DANDROID_TOOLCHAIN=clang -DANDROID_ABI=armeabi-v7a -DANDROID_NATIVE_API_LEVEL=21 -DANDROID_STL=c++_shared -DANDROID_LINKER_FLAGS="-landroid -llog" -DANDROID_CPP_FEATURES="rtti exceptions" /tmp/protobuf-3.6.1/cmake \
     && make -C /tmp/protobuf-3.6.1/build install && popd && mkdir -p /tmp/protobuf-3.6.1/build \
     && pushd /tmp/protobuf-3.6.1/build && sudo apt-get install -y g++ && cmake -Dprotobuf_BUILD_SHARED_LIBS=OFF -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release /tmp/protobuf-3.6.1/cmake \
-    && make -C /tmp/protobuf-3.6.1/build && sudo apt-get purge -y g++ && cp -p /tmp/protobuf-3.6.1/protoc /opt/daqs/protobuf/bin \
+    && make -C /tmp/protobuf-3.6.1/build && sudo apt-get purge -y g++ && cp -p /tmp/protobuf-3.6.1/build/protoc /opt/daqs/protobuf/bin \
     && rm -rf /tmp/protobuf-3.6.1'
 
 # Reconfigure locale
