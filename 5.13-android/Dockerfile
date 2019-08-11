@@ -34,6 +34,8 @@ ENV PATH ${QT_ANDROID}/bin:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${AND
 #  * libsm6, libice6, libxext6, libxrender1, libfontconfig1, libdbus-1-3, libx11-xcb1 - dependencies of Qt bundle run-file
 #  * libc6:i386, libncurses5:i386, libstdc++6:i386, libz1:i386 - dependencides of android sdk binaries
 #  * cmake, just an extra tool.
+#  * python3, python3-pip, p7zip-full for qli-installer
+#  * apt-utils debconf: delaying package configuration, since apt-utils is not installed
 RUN dpkg --add-architecture i386 && apt update && apt full-upgrade -y && apt install -y --no-install-recommends \
     wget \
     unzip \
@@ -58,16 +60,20 @@ RUN dpkg --add-architecture i386 && apt update && apt full-upgrade -y && apt ins
     libncurses5:i386 \
     libstdc++6:i386 \
     libz1:i386 \
+    python3 \
+    p7zip-full \
+    python3-pip \
+    apt-utils \
+    && pip3 install requests \
     && apt-get -qq clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY extract-qt-installer.sh /tmp/qt/
-
 # Download & unpack Qt toolchains & clean
-RUN curl -Lo /tmp/qt/installer.run "https://download.qt.io/official_releases/qt/$(echo "${QT_VERSION}" | cut -d. -f 1-2)/${QT_VERSION}/qt-opensource-linux-x64-${QT_VERSION}.run" \
-    && QT_CI_PACKAGES="qt.qt5.$(echo ${QT_VERSION} | tr -d .).android_armv7,qt.qt5.$(echo ${QT_VERSION} | tr -d .).qtcharts.android_armv7" /tmp/qt/extract-qt-installer.sh /tmp/qt/installer.run "$QT_PATH" \
-    && find "${QT_PATH}" -mindepth 1 -maxdepth 1 ! -name "${QT_VERSION}" -exec echo 'Cleaning Qt SDK: {}' \; -exec rm -r '{}' \; \
-    && rm -rf /tmp/qt
+RUN mkdir -p ${QT_PATH} && cd ${QT_PATH} && wget https://git.kaidan.im/lnj/qli-installer/raw/28d624d43010898320c1d1e40270024966689b14/qli-installer.py \
+     && chmod +x qli-installer.py && ./qli-installer.py 5.13.0 linux android android_armv7 && rm qli-installer.py \
+     && wget https://raw.githubusercontent.com/denisacostaq/qli-installer/master/qli-installer.py \
+     && chmod +x qli-installer.py && ./qli-installer.py 5.13.0 linux android android_armv7 qtcharts \
+     && cp -r output/5.13.0 . && rm -rf output qli-installer.py tmp
 
 # Download & unpack android SDK
 RUN curl -Lo /tmp/sdk-tools.zip 'https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip' \
