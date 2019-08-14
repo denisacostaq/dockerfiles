@@ -2,7 +2,7 @@
 # Image: rabits/qt:5.13-android
 
 FROM ubuntu:18.04
-MAINTAINER Alvaro Denis <denisacostaq@gmailcom>
+MAINTAINER Alvaro Denis <denisacostaq@gmail.com>
 
 ARG QT_VERSION=5.13.0
 ARG NDK_VERSION=r18b
@@ -85,7 +85,7 @@ RUN mkdir /tmp/android && cd /tmp/android && curl -Lo ndk.zip "https://dl.google
     && unzip -qq ndk.zip && mv android-ndk-* $ANDROID_NDK_ROOT && chmod -R +rX $ANDROID_NDK_ROOT \
     && rm -rf /tmp/android
 
-# Download an unpack cmake
+# Download & unpack cmake
 RUN wget -qO- https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz | sudo tar xzf - -C /opt/
 ENV PATH="/opt/cmake-${CMAKE_VERSION}-Linux-x86_64/bin:$PATH"
 
